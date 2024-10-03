@@ -6,7 +6,7 @@ from typing import Optional
 class ItemBase(BaseModel):
     name: str
     age: Optional[int] = None
-    email: int
+    email: str
     gender: str
     country: str
     passport: str
