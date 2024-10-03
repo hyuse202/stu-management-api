@@ -10,7 +10,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Student management api using fastapi",
     description="A simple CRUD API using FastAPI and PostgreSQL",
-    version="1.0.0",
+    version="0.0.4",
 )
 
 # Include the items router

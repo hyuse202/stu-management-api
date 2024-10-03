@@ -13,7 +13,11 @@ DATABASE_NAME = 'stu_management_app'
 DATABASE_URL = f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'
 
 # Create the SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine( DATABASE_URL,  
+                        pool_size=20,          
+                        max_overflow=0,       
+                        pool_timeout=30,      
+                        pool_recycle=1800, )
 
 # Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
