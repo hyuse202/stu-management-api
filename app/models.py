@@ -1,6 +1,6 @@
 # app/models.py
 
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Index
 from .database import Base
 
 class Item(Base):
@@ -11,3 +11,7 @@ class Item(Base):
     description = Column(String, index=True, nullable=True)
     price = Column(Float)
     tax = Column(Float, nullable=True)
+
+    __table_args__ = (
+        Index('ix_title_price', 'title', 'price'),
+    )
