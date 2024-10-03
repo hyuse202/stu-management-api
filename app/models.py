@@ -4,14 +4,16 @@ from sqlalchemy import Column, Integer, String, Float, Index
 from .database import Base
 
 class Item(Base):
-    __tablename__ = 'items'
+    __tablename__ = 'students'
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True, nullable=True)
-    price = Column(Float)
-    tax = Column(Float, nullable=True)
+    name = Column(String, index=True)
+    age = Column(Integer)
+    email = Column(String)
+    gender = Column(String, index=True, nullable=True)
+    country = Column(String)
+    passport = Column(String, nullable=True)
 
     __table_args__ = (
-        Index('ix_title_price', 'title', 'price'),
+        Index('ix_title_passport', 'name', 'passport'   ),
     )

@@ -4,19 +4,23 @@ from pydantic import BaseModel
 from typing import Optional
 
 class ItemBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-    price: float
-    tax: Optional[float] = None
+    name: str
+    age: Optional[int] = None
+    email: int
+    gender: str
+    country: str
+    passport: str
 
 class ItemCreate(ItemBase):
     pass
 
 class ItemUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
-    tax: Optional[float] = None
+    name: Optional[str] = None
+    age: Optional[int] = None
+    email: Optional[int] = None
+    gender: Optional[str] = None
+    country: Optional[str] = None
+    passport: Optional[str] = None
 
 class Item(ItemBase):
     id: int

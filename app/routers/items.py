@@ -8,8 +8,8 @@ from .. import models, schemas, crud
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/items",
-    tags=["items"],
+    prefix="/students",
+    tags=["student"],
     responses={404: {"description": "Not found"}},
 )
 
