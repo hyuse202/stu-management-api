@@ -17,7 +17,7 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     name: Optional[str] = None
     age: Optional[int] = None
-    email: Optional[int] = None
+    email: Optional[str] = None
     gender: Optional[str] = None
     country: Optional[str] = None
     passport: Optional[str] = None
