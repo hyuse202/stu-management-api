@@ -1,6 +1,6 @@
 # app/routers/items.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -17,10 +17,28 @@ router = APIRouter(
 def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_item(db=db, item=item)
 
-@router.get("/", response_model=List[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db=db, skip=skip, limit=limit)
-    return items
+@router.get("/")
+def read_items(   
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(10, ge=1, le=100, description="Maximum number of records to return"), 
+    db: Session = Depends(get_db)
+):
+
+    total, items = crud.get_items(db=db, skip=skip, limit=limit)
+    paginated_response = schemas.PaginatedItems(total=total, skip=skip, limit=limit, items=items)
+    print(paginated_response.dict())
+    # next_skip = skip + limit if skip + limit < total else None
+    # prev_skip = skip - limit if skip - limit >= 0 else (0 if skip > 0 else None)
+    # return schemas.PaginatedItems(
+    #     total=total,
+    #     skip=skip,
+    #     limit=limit,
+    #     items=items,
+    #     # next_skip=next_skip,
+    #     # prev_skip=prev_skip
+    # )
+    return paginated_response
+
 
 @router.get("/{item_id}", response_model=schemas.Item)
 def read_item(item_id: int, db: Session = Depends(get_db)):

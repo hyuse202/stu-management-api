@@ -1,6 +1,6 @@
 # app/models.py
 
-from sqlalchemy import Column, Integer, String, Float, Index
+from sqlalchemy import Column, Integer, String, Index
 from .database import Base
 
 class Item(Base):
