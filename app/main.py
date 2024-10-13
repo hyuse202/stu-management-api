@@ -5,7 +5,9 @@ from .database import engine, Base
 from .routers import items
 
 # Create all tables in the database (if not already created)
-Base.metadata.create_all(bind=engine)
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 app = FastAPI(
     title="Student management api using fastapi",

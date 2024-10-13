@@ -1,37 +1,60 @@
-# app/crud.py
-from sqlalchemy.orm import Session
+
+from sqlalchemy.future import select
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from . import models, schemas
+from sqlalchemy.ext.asyncio import AsyncSession
 
-def get_item(db: Session, item_id: int):
-    return db.query(models.Item).filter(models.Item.id == item_id).first()
+async def get_item(db: AsyncSession, item_id: int):
+    result = await db.execute(select(models.Item).where(models.Item.id == item_id))
+    return result.scalars().first()
 
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    total = db.query(func.count(models.Item.id)).scalar()
-    items = db.query(models.Item).offset(skip).limit(limit).all()
+async def get_items(db: AsyncSession, skip: int = 0, limit: int = 100):
+    # Get total count
+    count_result = await db.execute(select(func.count(models.Item.id)))
+    total = count_result.scalar()
+
+    # Get items with limit and offset
+    result = await db.execute(select(models.Item).offset(skip).limit(limit))
+    items = result.scalars().all()
+
     return total, items
 
-def create_item(db: Session, item: schemas.ItemCreate):
+async def create_item(db: AsyncSession, item: schemas.ItemCreate):
     db_item = models.Item(**item.dict())
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+    try:
+        await db.commit()
+        await db.refresh(db_item)
+        return db_item
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise e
 
-def update_item(db: Session, item_id: int, item: schemas.ItemUpdate):
-    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+async def update_item(db: AsyncSession, item_id: int, item: schemas.ItemUpdate):
+    result = await db.execute(select(models.Item).where(models.Item.id == item_id))
+    db_item = result.scalars().first()
     if not db_item:
         return None
     for key, value in item.dict(exclude_unset=True).items():
         setattr(db_item, key, value)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+    try:
+        await db.commit()
+        await db.refresh(db_item)
+        return db_item
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise e
 
-def delete_item(db: Session, item_id: int):
-    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+async def delete_item(db: AsyncSession, item_id: int):
+    result = await db.execute(select(models.Item).where(models.Item.id == item_id))
+    db_item = result.scalars().first()
     if not db_item:
         return None
-    db.delete(db_item)
-    db.commit()
-    return db_item
+    await db.delete(db_item)
+    try:
+        await db.commit()
+        return db_item
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise e
